@@ -2,7 +2,7 @@
 
 🇬🇧 **English version:** [README.en.md](README.en.md)
 
-Tugas kelompok mata kuliah **Cloud Computing (TIF1344X)**, Teknik Informatika, Universitas Muhammadiyah Surakarta (2026/2027).
+Tugas kelompok mata kuliah **Cloud Computing**, Teknik Informatika, Universitas Muhammadiyah Surakarta (2026/2027).
 
 Website Django milik sebuah Pimpinan Cabang Muhammadiyah (PCM) saya deploy ke AWS secara bertahap. Dimulai dari satu server EC2, lalu bagian-bagiannya dipindah ke layanan terkelola AWS sampai server tidak lagi menyimpan data apa pun.
 
