@@ -1,0 +1,42 @@
+# === KUNCI DAN RAHASIA: JANGAN PERNAH DI-COMMIT ===
+*.pem
+*.ppk
+*.key
+*.crt
+id_rsa*
+.env
+.env.*
+!.env.example
+*.bak
+credentials
+credentials.csv
+*accessKeys*.csv
+aws-exports*
+data.json
+db.sqlite3*
+
+# Terraform (jika nanti ditambahkan)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Arsip dan berkas mentah
+*.zip
+*.rar
+*.7z
+New folder/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editor dan sistem operasi
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
