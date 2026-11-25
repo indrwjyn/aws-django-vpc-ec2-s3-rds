@@ -2,7 +2,7 @@
 
 🇮🇩 **Versi Bahasa Indonesia:** [README.md](README.md)
 
-A group project for the **Cloud Computing (TIF1344X)** course, Informatics Engineering, Universitas Muhammadiyah Surakarta (2026/2027).
+A group project for the **Cloud Computing** course, Informatics Engineering, Universitas Muhammadiyah Surakarta (2026/2027).
 
 We deployed an existing Django website, built for a local branch of the Muhammadiyah organization (PCM), to AWS in stages. The project starts with a single EC2 server and then moves its parts to managed AWS services until the server no longer stores any data.
 
