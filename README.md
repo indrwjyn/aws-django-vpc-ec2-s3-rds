@@ -1,6 +1,6 @@
 # Deploy Website Django ke AWS: VPC, EC2, S3, IAM, dan RDS PostgreSQL
 
-🇬🇧 **English version:** [README.en.md](README.en.md)
+🇮🇩 Bahasa Indonesia | [🇬🇧 English](README.en.md)
 
 Tugas kelompok mata kuliah **Cloud Computing**, Teknik Informatika, Universitas Muhammadiyah Surakarta (2026/2027).
 
