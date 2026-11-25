@@ -19,6 +19,36 @@ Website Django milik sebuah Pimpinan Cabang Muhammadiyah (PCM) saya deploy ke AW
 
 Semua resource dibuat di region **Asia Pacific (Jakarta)** `ap-southeast-3`.
 
+## Topologi Jaringan
+
+### Level 1: Satu server di VPC buatan sendiri
+
+![Topologi Level 1](docs/architecture/level-1-architecture.png)
+
+Pengunjung masuk lewat Internet Gateway menuju Elastic IP milik EC2 di `public-a`. Nginx (port 80) meneruskan request dinamis ke Gunicorn di `127.0.0.1:8000`. Database SQLite dan file media berada di disk EC2. Subnet `public-b`, `private-a`, dan `private-b` sudah disiapkan untuk level berikutnya.
+
+### Level 2: File statis dan media pindah ke S3
+
+![Topologi Level 2](docs/architecture/level-2-architecture.png)
+
+Django tetap membuat halaman HTML, tetapi CSS, JavaScript, dan gambar dimuat browser langsung dari folder `static/` dan `media/` di bucket S3. EC2 menulis ke bucket lewat IAM role tanpa access key. SQLite masih berada di disk EC2.
+
+### Level 3: Database pindah ke RDS di subnet privat
+
+![Topologi Level 3](docs/architecture/level-3-architecture.png)
+
+RDS PostgreSQL berada di `private-b` dalam DB subnet group (`private-a` dan `private-b`) dengan *Publicly accessible: No*. Security group `db-sg` hanya menerima port 5432 dari `web-sg`, dan EC2 terhubung dengan `sslmode=require`. Dari laptop di luar VPC, database tidak bisa dijangkau.
+
+## Dokumentasi Lengkap
+
+| Level | Isi | Halaman |
+|---|---|---|
+| 1 | VPC, subnet, IGW, route table, security group, EC2, Elastic IP, SSH, Nginx, Gunicorn, systemd, verifikasi, tanya jawab | [`docs/level-1-vpc-ec2.md`](docs/level-1-vpc-ec2.md) |
+| 2 | Bucket S3, bucket policy, IAM role, AWS CLI, sinkronisasi media, `collectstatic` ke S3, verifikasi, tanya jawab | [`docs/level-2-s3-iam.md`](docs/level-2-s3-iam.md) |
+| 3 | Security group database, DB subnet group, RDS, ekspor dan impor data, uji dari laptop, tanya jawab | [`docs/level-3-rds.md`](docs/level-3-rds.md) |
+| Semua | Galeri seluruh screenshot (50 gambar) | [`evidence/README.md`](evidence/README.md) |
+| Semua | Laporan PDF (37 halaman) | [`docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf`](docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf) |
+
 ## Teknologi
 
 - **AWS:** VPC, Subnet, Internet Gateway, Route Table, Security Group, EC2, Elastic IP, S3, IAM Role, RDS for PostgreSQL
@@ -39,7 +69,7 @@ Kode aplikasi Django disediakan oleh dosen di [repositori tugas](https://github.
 | 19 tabel dan data lama (3 pesan kontak, akun admin) ikut pindah | [`evidence/level-3-rds/07_daftar-19-tabel-di-rds-setelah-migrate.png`](evidence/level-3-rds/07_daftar-19-tabel-di-rds-setelah-migrate.png), [`evidence/level-3-rds/08_query-di-rds-tiga-pesan-kontak-dan.png`](evidence/level-3-rds/08_query-di-rds-tiga-pesan-kontak-dan.png) |
 | Dari laptop di luar VPC, database tidak bisa dijangkau | [`evidence/level-3-rds/13_dari-laptop-endpoint-rds-hanya-menghasilkan-ip.png`](evidence/level-3-rds/13_dari-laptop-endpoint-rds-hanya-menghasilkan-ip.png) |
 
-Seluruh screenshot per level ada di [`evidence/`](evidence/README.md). Laporan lengkap: [`docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf`](docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf).
+Seluruh screenshot tampil di [galeri bukti](evidence/README.md). Laporan lengkap: [`docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf`](docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf).
 
 ## Keputusan Desain dan Alasannya
 
@@ -81,11 +111,15 @@ Seluruh screenshot per level ada di [`evidence/`](evidence/README.md). Laporan l
 ├── README.md                                      # versi Bahasa Indonesia
 ├── README.en.md                                   # English version
 ├── docs/
-│   ├── Laporan_Tugas1_Level1-3_Kelompok_I.pdf   # laporan lengkap (screenshot sudah disamarkan)
+│   ├── level-1-vpc-ec2.md                         # dokumentasi lengkap Level 1
+│   ├── level-2-s3-iam.md                          # dokumentasi lengkap Level 2
+│   ├── level-3-rds.md                             # dokumentasi lengkap Level 3
+│   ├── Laporan_Tugas1_Level1-3_Kelompok_I.pdf     # laporan lengkap (screenshot sudah disamarkan)
 │   ├── architecture/                              # diagram arsitektur Level 1, 2, dan 3
 │   └── social-preview.png                         # gambar untuk pratinjau repo di GitHub
 └── evidence/
-    ├── README.md                                  # indeks seluruh screenshot
+    ├── README.md                                  # galeri seluruh screenshot (Indonesia)
+    ├── README.en.md                               # galeri seluruh screenshot (English)
     ├── level-1-vpc-ec2/
     ├── level-2-s3-iam/
     └── level-3-rds/

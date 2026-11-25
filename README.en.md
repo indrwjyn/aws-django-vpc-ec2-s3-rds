@@ -18,6 +18,36 @@ We deployed an existing Django website, built for a local branch of the Muhammad
 
 All resources were created in the **Asia Pacific (Jakarta)** region, `ap-southeast-3`.
 
+## Network Topologies
+
+### Level 1: A single server in a custom VPC
+
+![Level 1 topology](docs/architecture/level-1-architecture.png)
+
+Visitors enter through the Internet Gateway to the Elastic IP of the EC2 instance in `public-a`. Nginx (port 80) forwards dynamic requests to Gunicorn on `127.0.0.1:8000`. The SQLite database and media files live on the EC2 disk. The `public-b`, `private-a`, and `private-b` subnets are already prepared for the next levels.
+
+### Level 2: Static and media files move to S3
+
+![Level 2 topology](docs/architecture/level-2-architecture.png)
+
+Django still renders the HTML pages, but the browser loads CSS, JavaScript, and images directly from the `static/` and `media/` folders of the S3 bucket. EC2 writes to the bucket through an IAM role with no access keys. SQLite is still on the EC2 disk.
+
+### Level 3: The database moves to RDS in private subnets
+
+![Level 3 topology](docs/architecture/level-3-architecture.png)
+
+RDS PostgreSQL sits in `private-b` inside a DB subnet group (`private-a` and `private-b`) with *Publicly accessible: No*. The `db-sg` security group accepts port 5432 only from `web-sg`, and EC2 connects with `sslmode=require`. From a laptop outside the VPC, the database cannot be reached.
+
+## Documentation
+
+| Level | Contents | Page |
+|---|---|---|
+| 1 | VPC, subnets, IGW, route tables, security group, EC2, Elastic IP, SSH, Nginx, Gunicorn, systemd, verification, Q&A | [`docs/level-1-vpc-ec2.md`](docs/level-1-vpc-ec2.md) (Indonesian) |
+| 2 | S3 bucket, bucket policy, IAM role, AWS CLI, media sync, `collectstatic` to S3, verification, Q&A | [`docs/level-2-s3-iam.md`](docs/level-2-s3-iam.md) (Indonesian) |
+| 3 | Database security group, DB subnet group, RDS, data export and import, test from a laptop, Q&A | [`docs/level-3-rds.md`](docs/level-3-rds.md) (Indonesian) |
+| All | Gallery of all 50 screenshots with English captions | [`evidence/README.en.md`](evidence/README.en.md) |
+| All | Full report PDF (37 pages, Indonesian) | [`docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf`](docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf) |
+
 ## Tech Stack
 
 - **AWS:** VPC, Subnets, Internet Gateway, Route Tables, Security Groups, EC2, Elastic IP, S3, IAM Role, RDS for PostgreSQL
@@ -38,7 +68,7 @@ The Django application code was provided by the lecturer in the [assignment repo
 | 19 tables and the old data (3 contact messages, the admin account) were migrated | [`evidence/level-3-rds/07_daftar-19-tabel-di-rds-setelah-migrate.png`](evidence/level-3-rds/07_daftar-19-tabel-di-rds-setelah-migrate.png), [`evidence/level-3-rds/08_query-di-rds-tiga-pesan-kontak-dan.png`](evidence/level-3-rds/08_query-di-rds-tiga-pesan-kontak-dan.png) |
 | From a laptop outside the VPC, the database is unreachable | [`evidence/level-3-rds/13_dari-laptop-endpoint-rds-hanya-menghasilkan-ip.png`](evidence/level-3-rds/13_dari-laptop-endpoint-rds-hanya-menghasilkan-ip.png) |
 
-All screenshots are indexed in [`evidence/`](evidence/README.md). The full report (in Indonesian) is at [`docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf`](docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf). Screenshot captions and the report are written in Indonesian.
+All screenshots are shown in the [evidence gallery](evidence/README.en.md). The full report (in Indonesian) is at [`docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf`](docs/Laporan_Tugas1_Level1-3_Kelompok_I.pdf). Screenshot captions and the report are written in Indonesian.
 
 ## Design Decisions and Rationale
 
@@ -80,11 +110,15 @@ All screenshots are indexed in [`evidence/`](evidence/README.md). The full repor
 ├── README.md                                      # Indonesian version
 ├── README.en.md                                   # English version
 ├── docs/
+│   ├── level-1-vpc-ec2.md                         # full Level 1 write-up (Indonesian)
+│   ├── level-2-s3-iam.md                          # full Level 2 write-up (Indonesian)
+│   ├── level-3-rds.md                             # full Level 3 write-up (Indonesian)
 │   ├── Laporan_Tugas1_Level1-3_Kelompok_I.pdf     # full report (screenshots redacted)
 │   ├── architecture/                              # Level 1, 2, and 3 architecture diagrams
 │   └── social-preview.png                         # repository preview image for GitHub
 └── evidence/
-    ├── README.md                                  # index of all screenshots
+    ├── README.md                                  # screenshot gallery (Indonesian captions)
+    ├── README.en.md                               # screenshot gallery (English captions)
     ├── level-1-vpc-ec2/
     ├── level-2-s3-iam/
     └── level-3-rds/
